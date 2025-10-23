@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatPrice } from '$lib/utils';
+	import { currencyStore, formatCurrency } from '$lib/currencies.svelte';
 	import { splitText, animate, stagger } from 'animejs';
 	import type { Attachment } from 'svelte/attachments';
 	let { total, period }: { total: number; period: string } = $props();
@@ -29,7 +29,7 @@
 		});
 	};
 
-	const priceStr = $derived(formatPrice(total));
+	const priceStr = $derived(formatCurrency(total, currencyStore.selected.current));
 </script>
 
 <div class="flex items-end">

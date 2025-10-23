@@ -6,7 +6,8 @@
 	import { intervalToString } from '$lib/subscriptions.svelte';
 	import Button from './ui/button/button.svelte';
 	import { getLocalTimeZone, today, type DateValue } from '@internationalized/date';
-	import { cn, formatPrice } from '$lib/utils';
+	import { formatCurrency, currencyStore } from '$lib/currencies.svelte';
+	import { cn } from '$lib/utils';
 
 	let {
 		plan,
@@ -22,7 +23,7 @@
 	let start = $state(today(getLocalTimeZone()));
 	const intervalStr = intervalToString(plan.interval);
 
-	const priceStr = formatPrice(plan.price);
+	const priceStr = formatCurrency(plan.price, currencyStore.selected.current);
 
 	const onSubmit = () => {
 		onadd?.(plan, start);

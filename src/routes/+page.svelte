@@ -5,6 +5,7 @@
 	import SubscriptionSection from '$lib/components/subscription-section.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import { currencyStore, formatCurrency } from '$lib/currencies.svelte';
 	import { importServices, type Service } from '$lib/services';
 	import { differenceInDays, getSubscriptionContext } from '$lib/subscriptions.svelte';
 	import { getLocalTimeZone } from '@internationalized/date';
@@ -82,8 +83,10 @@
 			class="col-span-2 w-full border-t border-dashed pt-4 text-center text-lg md:col-span-1 md:border-none md:p-0"
 		>
 			<div class="text-lg font-medium">
-				{subStore.soonestSubscription.subscription.service} - ${subStore.soonestSubscription
-					.subscription.price}
+				{subStore.soonestSubscription.subscription.service} - {formatCurrency(
+					subStore.soonestSubscription.subscription.price,
+					currencyStore.selected.current
+				)}
 			</div>
 			<div class="text-sm text-muted-foreground">in {dateDiff} days</div>
 		</div>

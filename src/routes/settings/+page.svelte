@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { ArrowLeft } from '@lucide/svelte';
+	import { currencies, currencyStore } from '$lib/currencies.svelte';
 </script>
 
 <div class="mb-4">
@@ -13,5 +14,10 @@
 
 <div>
 	<h2 class="mb-4 text-lg">Currency</h2>
+	<select class="mb-8 rounded-md border p-2" bind:value={currencyStore.selected.current}>
+		{#each Object.entries(currencies) as [code] (code)}
+			<option value={code}>{code}</option>
+		{/each}
+	</select>
 	<h2 class="mb-4 text-lg">Export & Import</h2>
 </div>

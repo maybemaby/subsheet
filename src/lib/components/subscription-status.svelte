@@ -4,7 +4,7 @@
 		intervalToString,
 		type Subscription
 	} from '$lib/subscriptions.svelte';
-	import { formatPrice } from '$lib/utils';
+	import { formatCurrency, currencyStore } from '$lib/currencies.svelte';
 	import Button from './ui/button/button.svelte';
 
 	let {
@@ -18,7 +18,7 @@
 		return getNextBillingDate(subscription.startDate, subscription.interval);
 	});
 
-	let priceStr = formatPrice(subscription.price);
+	let priceStr = formatCurrency(subscription.price, currencyStore.selected.current);
 </script>
 
 <div
