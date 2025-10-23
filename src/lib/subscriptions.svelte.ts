@@ -1,0 +1,184 @@
+// import { createCollection, type CollectionConfig } from '@tanstack/svelte-db';
+import { PersistedState } from 'runed';
+import { CalendarDate, getLocalTimeZone, parseDate } from '@internationalized/date';
+import SuperJSON from 'superjson';
+import * as v from 'valibot';
+import { getContext } from 'svelte';
+
+export const intervalSchema = v.object({
+	days: v.pipe(v.number(), v.minValue(0)),
+	weeks: v.pipe(v.number(), v.minValue(0)),
+	months: v.pipe(v.number(), v.minValue(0)),
+	years: v.pipe(v.number(), v.minValue(0))
+});
+
+export type Interval = v.InferInput<typeof intervalSchema>;
+
+export const subscriptionSchema = v.object({
+	service: v.string(),
+	plan: v.string(),
+	startDate: v.date(),
+	price: v.pipe(v.number(), v.minValue(0)),
+	interval: intervalSchema
+});
+
+export type Subscription = v.InferInput<typeof subscriptionSchema>;
+
+/**
+ * Calculates the next billing date given a start date and interval.
+ * @param startDate - The start date of the subscription (Date or string)
+ * @param interval - The interval object { days, weeks, months, years }
+ * @returns The next billing date as a Date object
+ */
+export function addInterval(startDate: Date | string, interval: Interval): Date {
+	// CalendarDate expects year, month, day
+	let date: CalendarDate;
+	if (typeof startDate === 'string') {
+		date = parseDate(startDate);
+	} else {
+		date = new CalendarDate(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDate());
+	}
+	let nextDate = date;
+
+	nextDate = nextDate.add({
+		days: interval.days,
+		weeks: interval.weeks,
+		months: interval.months,
+		years: interval.years
+	});
+
+	return nextDate.toDate(getLocalTimeZone());
+}
+
+export function getNextBillingDate(startDate: Date, interval: Interval): Date {
+	let nextDate = startDate;
+
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
+	while (nextDate === undefined || nextDate <= new Date()) {
+		nextDate = addInterval(nextDate, interval);
+	}
+
+	return nextDate;
+}
+
+export function intervalToString(interval: Interval): string {
+	const parts: string[] = [];
+
+	if (interval.years) {
+		parts.push(`${interval.years} year${interval.years > 1 ? 's' : ''}`);
+	}
+	if (interval.months) {
+		parts.push(`${interval.months} month${interval.months > 1 ? 's' : ''}`);
+	}
+	if (interval.weeks) {
+		parts.push(`${interval.weeks} week${interval.weeks > 1 ? 's' : ''}`);
+	}
+	if (interval.days) {
+		parts.push(`${interval.days} day${interval.days > 1 ? 's' : ''}`);
+	}
+
+	return parts.join(', ');
+}
+
+export function differenceInDays(date1: Date, date2: Date): number {
+	const oneDay = 1000 * 60 * 60 * 24; // milliseconds in a day
+	const diffInTime = date2.getTime() - date1.getTime();
+	return Math.ceil(diffInTime / oneDay);
+}
+
+export const subscriptionCtxKey = 'subscription' as const;
+
+export function getSubscriptionContext() {
+	return getContext<SubscriptionStore>(subscriptionCtxKey);
+}
+
+export class SubscriptionStore {
+	subscriptions = new PersistedState<Record<string, Subscription>>(
+		'subscriptions',
+		{},
+		{
+			serializer: {
+				serialize: SuperJSON.stringify,
+				deserialize: SuperJSON.parse
+			}
+		}
+	);
+
+	totalCostPerMonth = $derived.by(() => {
+		const subs = Object.values(this.subscriptions.current);
+		let total = 0;
+
+		subs.forEach((sub) => {
+			const interval = sub.interval;
+			const intervalInMonths =
+				interval.years * 12 + interval.months + interval.weeks * (1 / 4) + interval.days * (1 / 30);
+
+			total += sub.price / intervalInMonths;
+		});
+
+		return Math.round(total * 100) / 100;
+	});
+
+	totalCostPerYear = $derived.by(() => {
+		const subs = Object.values(this.subscriptions.current);
+		let total = 0;
+
+		subs.forEach((sub) => {
+			const interval = sub.interval;
+			const intervalInYears =
+				interval.years + interval.months / 12 + interval.weeks / 52 + interval.days / 365;
+
+			total += sub.price / intervalInYears;
+		});
+
+		return Math.round(total * 100) / 100;
+	});
+
+	soonestSubscription = $derived.by(() => {
+		const subs = Object.values(this.subscriptions.current);
+
+		if (subs.length === 0) {
+			return null;
+		}
+
+		subs.sort((a, b) => {
+			const nextA = getNextBillingDate(a.startDate, a.interval);
+			const nextB = getNextBillingDate(b.startDate, b.interval);
+
+			return nextA.getTime() - nextB.getTime();
+		});
+
+		return {
+			subscription: subs[0],
+			nextDate: getNextBillingDate(subs[0].startDate, subs[0].interval)
+		};
+	});
+
+	// ...existing code...
+	addSubscription(subscription: Subscription) {
+		this.subscriptions.current[subscription.service] = subscription;
+	}
+
+	removeSubscription(serviceName: string) {
+		const copy = { ...this.subscriptions.current };
+		delete copy[serviceName];
+		this.subscriptions.current = copy;
+	}
+}
+
+// function createConfig(): CollectionConfig<Subscription> {
+//   return {
+//     schema: subscriptionSchema,
+//     getKey(item) {
+//       return item.name;
+//     },
+
+//   }
+// }
+
+// const subscriptionCollection = createCollection({
+// 	schema: subscriptionSchema,
+//   getKey(item) {
+//     return item.name;
+//   },
+// });

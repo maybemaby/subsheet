@@ -1,0 +1,156 @@
+{
+	"Netflix": {
+		"plans": [
+			{
+				"name": "Standard with ads",
+				"price": 7.99,
+				"interval": {
+					"months": 1,
+					"years": 0,
+					"days": 0,
+					"weeks": 0
+				}
+			},
+			{
+				"name": "Standard",
+				"price": 17.99,
+				"interval": {
+					"months": 1,
+					"years": 0,
+					"days": 0,
+					"weeks": 0
+				}
+			},
+			{
+				"name": "Premium",
+				"price": 24.99,
+				"interval": {
+					"months": 1,
+					"years": 0,
+					"days": 0,
+					"weeks": 0
+				}
+			}
+		],
+		"brandColor": "#E50914"
+	},
+	"Spotify": {
+		"plans": [
+			{
+				"name": "Premium Individual",
+				"price": 11.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Premium Student",
+				"price": 6.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Premium Duo",
+				"price": 16.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Premium Family",
+				"price": 19.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Basic Individual",
+				"price": 10.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Audiobooks Access",
+				"price": 9.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"Youtube Premium": {
+		"plans": [
+			{
+				"name": "Individual",
+				"price": 13.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Family",
+				"price": 22.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Student",
+				"price": 7.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Premium Lite",
+				"price": 7.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"Apple Music": {
+		"plans": [
+			{
+				"name": "Individual",
+				"price": 10.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Family",
+				"price": 16.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Student",
+				"price": 5.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"Amazon Prime": {
+		"plans": [
+			{
+				"name": "Monthly",
+				"price": 14.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Annual",
+				"price": 139.0,
+				"interval": { "months": 0, "years": 1, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"ChatGPT": {
+		"plans": [
+			{
+				"name": "Plus",
+				"price": 20.0,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Pro",
+				"price": 200.0,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"Claude": {
+		"plans": [
+			{
+				"name": "Pro",
+				"price": 17.0,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Max",
+				"price": 100.0,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	}
+}
