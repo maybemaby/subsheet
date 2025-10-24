@@ -5,18 +5,24 @@ import SuperJSON from 'superjson';
 import * as v from 'valibot';
 import { getContext } from 'svelte';
 
-export const intervalSchema = v.object({
-	days: v.pipe(v.number(), v.minValue(0)),
-	weeks: v.pipe(v.number(), v.minValue(0)),
-	months: v.pipe(v.number(), v.minValue(0)),
-	years: v.pipe(v.number(), v.minValue(0))
-});
+export const intervalSchema = v.pipe(
+	v.object({
+		days: v.pipe(v.number(), v.minValue(0), v.integer()),
+		weeks: v.pipe(v.number(), v.minValue(0), v.integer()),
+		months: v.pipe(v.number(), v.minValue(0), v.integer()),
+		years: v.pipe(v.number(), v.minValue(0), v.integer())
+	}),
+	v.check(
+		(input) => input.days + input.weeks + input.months + input.years > 0,
+		'Interval must have at least one non-zero value'
+	)
+);
 
 export type Interval = v.InferInput<typeof intervalSchema>;
 
 export const subscriptionSchema = v.object({
-	service: v.string(),
-	plan: v.string(),
+	service: v.pipe(v.string(), v.nonEmpty('Service name cannot be empty')),
+	plan: v.pipe(v.string(), v.nonEmpty('Plan name cannot be empty')),
 	startDate: v.date(),
 	price: v.pipe(v.number(), v.minValue(0)),
 	interval: intervalSchema

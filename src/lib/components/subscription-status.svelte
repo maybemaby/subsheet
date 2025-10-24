@@ -22,7 +22,7 @@
 </script>
 
 <div
-	class="group flex h-(--height-status) items-center gap-2 rounded-md border px-4 py-2 shadow-sm"
+	class="group flex h-(--height-status) min-h-(--height-status) items-center gap-2 rounded-md border px-4 py-2 shadow-sm"
 	style:background-color={brandColor}
 	style:border-color={brandColor}
 >
@@ -41,7 +41,7 @@
 		</div>
 	</div>
 	<div>
-		<Button variant="ghost" size="icon" class="invisible group-hover:visible" onclick={onRemove}>
+		<Button variant="ghost" size="icon" onclick={onRemove}>
 			<span class="sr-only">Remove Subscription</span>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

@@ -2,10 +2,11 @@ import devtoolsJson from 'vite-plugin-devtools-json';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { analyzer } from 'vite-bundle-analyzer';
+// import { analyzer } from 'vite-bundle-analyzer';
+import {svelteTesting} from "@testing-library/svelte/vite";
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit(), devtoolsJson(), analyzer()],
+	plugins: [tailwindcss(), sveltekit(), devtoolsJson(), svelteTesting()],
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
@@ -13,12 +14,12 @@ export default defineConfig({
 				extends: './vite.config.ts',
 				test: {
 					name: 'client',
-					environment: 'browser',
-					browser: {
-						enabled: false,
-						provider: 'playwright',
-						instances: [{ browser: 'chromium' }]
-					},
+					environment: 'jsdom',
+					// browser: {
+					// 	enabled: false,
+					// 	provider: 'playwright',
+					// 	instances: [{ browser: 'chromium' }]
+					// },
 					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
 					exclude: ['src/lib/server/**'],
 					setupFiles: ['./vitest-setup-client.ts']

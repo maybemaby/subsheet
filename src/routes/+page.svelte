@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import CostTotal from '$lib/components/cost-total.svelte';
+	import CustomSub from '$lib/components/custom-sub.svelte';
 	import Plan from '$lib/components/plan.svelte';
 	import SubscriptionSection from '$lib/components/subscription-section.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -100,9 +101,11 @@
 </div>
 
 <section class="mb-8">
-	<h2 class="mb-4 text-xl">Your Subscriptions</h2>
+	<div class="mb-4 flex items-center justify-between">
+		<h2 class="text-xl">Your Subscriptions</h2>
+		<CustomSub onadd={(sub) => subStore.addSubscription(sub)} />
+	</div>
 	<SubscriptionSection />
-	<Button class="mt-4 max-w-[400px]" variant="secondary">+ Add Custom Subscription</Button>
 </section>
 
 <section>

@@ -152,5 +152,24 @@
 				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
 			}
 		]
+	},
+	"Google One": {
+		"plans": [
+			{
+				"name": "Basic (100GB)",
+				"price": 1.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Premium (2TB)",
+				"price": 9.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Google AI Pro (2TB)",
+				"price": 19.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
 	}
 }
