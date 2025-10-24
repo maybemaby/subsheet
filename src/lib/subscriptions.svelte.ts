@@ -1,6 +1,11 @@
 // import { createCollection, type CollectionConfig } from '@tanstack/svelte-db';
 import { PersistedState } from 'runed';
-import { CalendarDate, getLocalTimeZone, parseDate } from '@internationalized/date';
+import {
+	CalendarDate,
+	getLocalTimeZone,
+	parseAbsoluteToLocal,
+	parseDate
+} from '@internationalized/date';
 import SuperJSON from 'superjson';
 import * as v from 'valibot';
 import { getContext } from 'svelte';
@@ -20,6 +25,22 @@ export const intervalSchema = v.pipe(
 
 export type Interval = v.InferInput<typeof intervalSchema>;
 
+export const importSubscriptionSchema = v.object({
+	service: v.pipe(v.string(), v.nonEmpty('Service name cannot be empty')),
+	plan: v.pipe(v.string(), v.nonEmpty('Plan name cannot be empty')),
+	startDate: v.pipe(
+		v.string(),
+		v.transform((val) => {
+			const dt = parseAbsoluteToLocal(val);
+
+			return new CalendarDate(dt.year, dt.month, dt.day).toDate(getLocalTimeZone());
+		}),
+		v.date()
+	),
+	price: v.pipe(v.number(), v.minValue(0)),
+	interval: intervalSchema
+});
+
 export const subscriptionSchema = v.object({
 	service: v.pipe(v.string(), v.nonEmpty('Service name cannot be empty')),
 	plan: v.pipe(v.string(), v.nonEmpty('Plan name cannot be empty')),
@@ -27,6 +48,8 @@ export const subscriptionSchema = v.object({
 	price: v.pipe(v.number(), v.minValue(0)),
 	interval: intervalSchema
 });
+
+export const importSubscriptionDataSchema = v.record(v.string(), importSubscriptionSchema);
 
 export type Subscription = v.InferInput<typeof subscriptionSchema>;
 
@@ -169,6 +192,13 @@ export class SubscriptionStore {
 		const copy = { ...this.subscriptions.current };
 		delete copy[serviceName];
 		this.subscriptions.current = copy;
+	}
+
+	importSubscriptions(subs: Record<string, Subscription>) {
+		this.subscriptions.current = {
+			...this.subscriptions.current,
+			...subs
+		};
 	}
 }
 

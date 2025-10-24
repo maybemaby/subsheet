@@ -41,7 +41,6 @@
 
 		if (res.success) {
 			// Handle successful parsing, e.g., add the subscription
-			console.log('Parsed subscription:', res.output);
 			onadd?.(res.output);
 			open = false;
 		} else {

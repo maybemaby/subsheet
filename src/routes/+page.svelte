@@ -105,7 +105,10 @@
 		<h2 class="text-xl">Your Subscriptions</h2>
 		<CustomSub onadd={(sub) => subStore.addSubscription(sub)} />
 	</div>
-	<SubscriptionSection />
+	<SubscriptionSection
+		subscriptions={subStore.subscriptions.current}
+		onremove={(service) => subStore.removeSubscription(service)}
+	/>
 </section>
 
 <section>

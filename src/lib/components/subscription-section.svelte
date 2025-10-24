@@ -1,21 +1,23 @@
 <script lang="ts">
-	import { getSubscriptionContext } from '$lib/subscriptions.svelte';
+	import { type Subscription } from '$lib/subscriptions.svelte';
 	import { ChevronDown } from '@lucide/svelte';
 	import { Button } from './ui/button';
 	import SubscriptionStatus from './subscription-status.svelte';
 
+	let {
+		subscriptions,
+		onremove
+	}: { subscriptions: Record<string, Subscription>; onremove?: (service: string) => void } =
+		$props();
+
 	let statusExpanded = $state(false);
-	let subStore = getSubscriptionContext();
-	let subscriptionCount = $derived.by(() => Object.keys(subStore.subscriptions.current).length);
+	let subscriptionCount = $derived.by(() => Object.keys(subscriptions).length);
 </script>
 
 <div class="flex flex-col" style="--sub-count: {subscriptionCount}">
 	<div class={['subs flex flex-col gap-2', !statusExpanded && 'minimized']}>
-		{#each Object.values(subStore.subscriptions.current) as subscription ('status' + subscription.service + subscription.plan)}
-			<SubscriptionStatus
-				{subscription}
-				onRemove={() => subStore.removeSubscription(subscription.service)}
-			/>
+		{#each Object.values(subscriptions) as subscription ('status' + subscription.service + subscription.plan)}
+			<SubscriptionStatus {subscription} onRemove={() => onremove?.(subscription.service)} />
 		{/each}
 	</div>
 	{#if subscriptionCount > 5}
