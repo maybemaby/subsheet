@@ -8,7 +8,7 @@ import {
 } from '@internationalized/date';
 import SuperJSON from 'superjson';
 import * as v from 'valibot';
-import { getContext } from 'svelte';
+import { getContext, untrack } from 'svelte';
 import type { Migration, PersistedData } from './persistence';
 
 export const intervalSchema = v.pipe(
@@ -151,16 +151,27 @@ export class SubscriptionStore {
 	);
 
 	public constructor() {
-		const currentVersion = this.subscriptionStorage.current.version;
+		// Effect so it only runs on client
+		$effect(() => {
+			untrack(() => {
+				const currentVersion = this.subscriptionStorage.current.version;
 
-		const targetVersion =
-			this.migrations.sort((a, b) => b.version - a.version)[0]?.version ?? currentMigrationVersion;
+				const targetVersion =
+					this.migrations.sort((a, b) => b.version - a.version)[0]?.version ??
+					currentMigrationVersion;
 
-		console.log('Current subscription data version:', currentVersion);
+				console.log('Current subscription data version:', currentVersion);
 
-		if (currentVersion < targetVersion) {
-			console.log('Migrating subscription data from version', currentVersion, 'to', targetVersion);
-		}
+				if (currentVersion < targetVersion) {
+					console.log(
+						'Migrating subscription data from version',
+						currentVersion,
+						'to',
+						targetVersion
+					);
+				}
+			});
+		});
 	}
 
 	readonly subscriptions = $derived.by(() => {

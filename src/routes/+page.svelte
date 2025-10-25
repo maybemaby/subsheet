@@ -7,7 +7,6 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { currencyStore, formatCurrency } from '$lib/currencies.svelte';
-	import { MigrationError } from '$lib/persistence';
 	import { importServices, type Service } from '$lib/services';
 	import { differenceInDays, getSubscriptionContext } from '$lib/subscriptions.svelte';
 	import { getLocalTimeZone } from '@internationalized/date';
@@ -52,6 +51,7 @@
 
 	$effect(() => {
 		const start = performance.now();
+
 		loadServices().then(() => {
 			console.log('Services loaded');
 
@@ -125,7 +125,7 @@
 		<h3 class="mb-4">{name}</h3>
 
 		<!-- <PlanTable plans={service.plans} /> -->
-		<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+		<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each service.plans as plan (plan.name)}
 				<Plan
 					service={name}

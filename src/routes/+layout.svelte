@@ -7,6 +7,7 @@
 	import { Settings2 } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import { MigrationError } from '$lib/persistence';
+	import Button from '$lib/components/ui/button/button.svelte';
 
 	let { children } = $props();
 
@@ -24,6 +25,10 @@
 			console.error('Migration error:', error);
 			errorType = 'migration';
 			errorMessage = error.message;
+		} else {
+			console.error('Unexpected error:', error);
+			errorType = 'unexpected';
+			errorMessage = 'An unexpected error occurred.';
 		}
 	};
 </script>
@@ -53,9 +58,9 @@
 	{#snippet failed()}
 		{@render header()}
 		<main class="mx-auto min-h-(--height-body) max-w-screen-lg border-x border-dashed p-4">
-			<h1 class="text-xl">Error Occurred</h1>
-			<p>Cause: {errorMessage}</p>
-			<button onclick={errorReset}> Try Again </button>
+			<h1 class="mb-1 text-xl">Error Occurred</h1>
+			<p class="mb-4">Cause: {errorMessage}</p>
+			<Button class="rounded-none" onclick={errorReset}>Try Again</Button>
 		</main>
 	{/snippet}
 
