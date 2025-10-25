@@ -9,6 +9,7 @@ import {
 import SuperJSON from 'superjson';
 import * as v from 'valibot';
 import { getContext } from 'svelte';
+import type { Migration, PersistedData } from './persistence';
 
 export const intervalSchema = v.pipe(
 	v.object({
@@ -121,10 +122,26 @@ export function getSubscriptionContext() {
 	return getContext<SubscriptionStore>(subscriptionCtxKey);
 }
 
+const currentMigrationVersion = 1;
+
+type SubscriptionPersistedData = PersistedData<Record<string, Subscription>>;
+
 export class SubscriptionStore {
-	subscriptions = new PersistedState<Record<string, Subscription>>(
+	readonly migrations: Migration[] = [
+		{
+			version: 2,
+			up: (data: unknown) => {
+				return data;
+			}
+		}
+	];
+
+	subscriptionStorage = new PersistedState<SubscriptionPersistedData>(
 		'subscriptions',
-		{},
+		{
+			version: currentMigrationVersion,
+			data: {}
+		},
 		{
 			serializer: {
 				serialize: SuperJSON.stringify,
@@ -133,8 +150,25 @@ export class SubscriptionStore {
 		}
 	);
 
+	public constructor() {
+		const currentVersion = this.subscriptionStorage.current.version;
+
+		const targetVersion =
+			this.migrations.sort((a, b) => b.version - a.version)[0]?.version ?? currentMigrationVersion;
+
+		console.log('Current subscription data version:', currentVersion);
+
+		if (currentVersion < targetVersion) {
+			console.log('Migrating subscription data from version', currentVersion, 'to', targetVersion);
+		}
+	}
+
+	readonly subscriptions = $derived.by(() => {
+		return this.subscriptionStorage.current.data;
+	});
+
 	totalCostPerMonth = $derived.by(() => {
-		const subs = Object.values(this.subscriptions.current);
+		const subs = Object.values(this.subscriptions);
 		let total = 0;
 
 		subs.forEach((sub) => {
@@ -149,7 +183,7 @@ export class SubscriptionStore {
 	});
 
 	totalCostPerYear = $derived.by(() => {
-		const subs = Object.values(this.subscriptions.current);
+		const subs = Object.values(this.subscriptions);
 		let total = 0;
 
 		subs.forEach((sub) => {
@@ -164,7 +198,7 @@ export class SubscriptionStore {
 	});
 
 	soonestSubscription = $derived.by(() => {
-		const subs = Object.values(this.subscriptions.current);
+		const subs = Object.values(this.subscriptions);
 
 		if (subs.length === 0) {
 			return null;
@@ -185,18 +219,18 @@ export class SubscriptionStore {
 
 	// ...existing code...
 	addSubscription(subscription: Subscription) {
-		this.subscriptions.current[subscription.service] = subscription;
+		this.subscriptionStorage.current.data[subscription.service] = subscription;
 	}
 
 	removeSubscription(serviceName: string) {
-		const copy = { ...this.subscriptions.current };
+		const copy = { ...this.subscriptionStorage.current.data };
 		delete copy[serviceName];
-		this.subscriptions.current = copy;
+		this.subscriptionStorage.current.data = copy;
 	}
 
 	importSubscriptions(subs: Record<string, Subscription>) {
-		this.subscriptions.current = {
-			...this.subscriptions.current,
+		this.subscriptionStorage.current.data = {
+			...this.subscriptionStorage.current.data,
 			...subs
 		};
 	}

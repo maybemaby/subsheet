@@ -7,6 +7,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { currencyStore, formatCurrency } from '$lib/currencies.svelte';
+	import { MigrationError } from '$lib/persistence';
 	import { importServices, type Service } from '$lib/services';
 	import { differenceInDays, getSubscriptionContext } from '$lib/subscriptions.svelte';
 	import { getLocalTimeZone } from '@internationalized/date';
@@ -40,7 +41,7 @@
 
 	const subStore = getSubscriptionContext();
 
-	let subscriptionCount = $derived.by(() => Object.keys(subStore.subscriptions.current).length);
+	let subscriptionCount = $derived.by(() => Object.keys(subStore.subscriptions).length);
 	let totalCost = $derived.by(() =>
 		period === 'month' ? subStore.totalCostPerMonth : subStore.totalCostPerYear
 	);
@@ -106,7 +107,7 @@
 		<CustomSub onadd={(sub) => subStore.addSubscription(sub)} />
 	</div>
 	<SubscriptionSection
-		subscriptions={subStore.subscriptions.current}
+		subscriptions={subStore.subscriptions}
 		onremove={(service) => subStore.removeSubscription(service)}
 	/>
 </section>
