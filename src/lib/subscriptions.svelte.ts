@@ -9,7 +9,7 @@ import {
 import SuperJSON from 'superjson';
 import * as v from 'valibot';
 import { getContext, untrack } from 'svelte';
-import type { Migration, PersistedData } from './persistence';
+import { migratePersistedData, type Migration, type PersistedData } from './persistence';
 
 export const intervalSchema = v.pipe(
 	v.object({
@@ -245,11 +245,28 @@ export class SubscriptionStore {
 	}
 
 	importSubscriptions(subs: ImportSubscriptionData) {
+		const importedVersion = subs.version;
+		const targetVersion =
+			this.migrations.sort((a, b) => b.version - a.version)[0]?.version ?? currentMigrationVersion;
+
+		let incomingData: ImportSubscriptionData = subs;
+
+		if (importedVersion < targetVersion) {
+			console.log(
+				'Migrating imported subscription data from version',
+				importedVersion,
+				'to',
+				targetVersion
+			);
+
+			incomingData = migratePersistedData(incomingData, this.migrations);
+		}
+
 		this.subscriptionStorage.current = {
-			version: subs.version,
+			version: incomingData.version,
 			data: {
 				...this.subscriptionStorage.current.data,
-				...subs.data
+				...incomingData.data
 			}
 		};
 	}

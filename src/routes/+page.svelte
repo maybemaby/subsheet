@@ -114,7 +114,7 @@
 
 <section>
 	<div class="flex items-start justify-between">
-		<h2 class="text-xl">Services</h2>
+		<h2 class="mr-4 text-xl">Services</h2>
 
 		<Input placeholder="Search services..." class="max-w-[300px]" bind:value={searchTerm} />
 	</div>
