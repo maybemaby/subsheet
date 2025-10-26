@@ -50,7 +50,12 @@ export const subscriptionSchema = v.object({
 	interval: intervalSchema
 });
 
-export const importSubscriptionDataSchema = v.record(v.string(), importSubscriptionSchema);
+export const importSubscriptionDataSchema = v.object({
+	version: v.pipe(v.number(), v.minValue(1), v.integer()),
+	data: v.record(v.string(), importSubscriptionSchema)
+});
+
+export type ImportSubscriptionData = v.InferOutput<typeof importSubscriptionDataSchema>;
 
 export type Subscription = v.InferInput<typeof subscriptionSchema>;
 
@@ -239,10 +244,13 @@ export class SubscriptionStore {
 		this.subscriptionStorage.current.data = copy;
 	}
 
-	importSubscriptions(subs: Record<string, Subscription>) {
-		this.subscriptionStorage.current.data = {
-			...this.subscriptionStorage.current.data,
-			...subs
+	importSubscriptions(subs: ImportSubscriptionData) {
+		this.subscriptionStorage.current = {
+			version: subs.version,
+			data: {
+				...this.subscriptionStorage.current.data,
+				...subs.data
+			}
 		};
 	}
 }
