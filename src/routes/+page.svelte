@@ -40,7 +40,7 @@
 
 	const subStore = getSubscriptionContext();
 
-	let subscriptionCount = $derived.by(() => Object.keys(subStore.subscriptions.current).length);
+	let subscriptionCount = $derived.by(() => Object.keys(subStore.subscriptions).length);
 	let totalCost = $derived.by(() =>
 		period === 'month' ? subStore.totalCostPerMonth : subStore.totalCostPerYear
 	);
@@ -51,6 +51,7 @@
 
 	$effect(() => {
 		const start = performance.now();
+
 		loadServices().then(() => {
 			console.log('Services loaded');
 
@@ -106,14 +107,14 @@
 		<CustomSub onadd={(sub) => subStore.addSubscription(sub)} />
 	</div>
 	<SubscriptionSection
-		subscriptions={subStore.subscriptions.current}
+		subscriptions={subStore.subscriptions}
 		onremove={(service) => subStore.removeSubscription(service)}
 	/>
 </section>
 
 <section>
 	<div class="flex items-start justify-between">
-		<h2 class="text-xl">Services</h2>
+		<h2 class="mr-4 text-xl">Services</h2>
 
 		<Input placeholder="Search services..." class="max-w-[300px]" bind:value={searchTerm} />
 	</div>
@@ -124,7 +125,7 @@
 		<h3 class="mb-4">{name}</h3>
 
 		<!-- <PlanTable plans={service.plans} /> -->
-		<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+		<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each service.plans as plan (plan.name)}
 				<Plan
 					service={name}

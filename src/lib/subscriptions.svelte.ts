@@ -8,7 +8,8 @@ import {
 } from '@internationalized/date';
 import SuperJSON from 'superjson';
 import * as v from 'valibot';
-import { getContext } from 'svelte';
+import { getContext, untrack } from 'svelte';
+import { migratePersistedData, type Migration, type PersistedData } from './persistence';
 
 export const intervalSchema = v.pipe(
 	v.object({
@@ -49,7 +50,12 @@ export const subscriptionSchema = v.object({
 	interval: intervalSchema
 });
 
-export const importSubscriptionDataSchema = v.record(v.string(), importSubscriptionSchema);
+export const importSubscriptionDataSchema = v.object({
+	version: v.pipe(v.number(), v.minValue(1), v.integer()),
+	data: v.record(v.string(), importSubscriptionSchema)
+});
+
+export type ImportSubscriptionData = v.InferOutput<typeof importSubscriptionDataSchema>;
 
 export type Subscription = v.InferInput<typeof subscriptionSchema>;
 
@@ -121,10 +127,26 @@ export function getSubscriptionContext() {
 	return getContext<SubscriptionStore>(subscriptionCtxKey);
 }
 
+const currentMigrationVersion = 1;
+
+type SubscriptionPersistedData = PersistedData<Record<string, Subscription>>;
+
 export class SubscriptionStore {
-	subscriptions = new PersistedState<Record<string, Subscription>>(
+	readonly migrations: Migration[] = [
+		{
+			version: 2,
+			up: (data: unknown) => {
+				return data;
+			}
+		}
+	];
+
+	subscriptionStorage = new PersistedState<SubscriptionPersistedData>(
 		'subscriptions',
-		{},
+		{
+			version: currentMigrationVersion,
+			data: {}
+		},
 		{
 			serializer: {
 				serialize: SuperJSON.stringify,
@@ -133,8 +155,36 @@ export class SubscriptionStore {
 		}
 	);
 
+	public constructor() {
+		// Effect so it only runs on client
+		$effect(() => {
+			untrack(() => {
+				const currentVersion = this.subscriptionStorage.current.version;
+
+				const targetVersion =
+					this.migrations.sort((a, b) => b.version - a.version)[0]?.version ??
+					currentMigrationVersion;
+
+				console.log('Current subscription data version:', currentVersion);
+
+				if (currentVersion < targetVersion) {
+					console.log(
+						'Migrating subscription data from version',
+						currentVersion,
+						'to',
+						targetVersion
+					);
+				}
+			});
+		});
+	}
+
+	readonly subscriptions = $derived.by(() => {
+		return this.subscriptionStorage.current.data;
+	});
+
 	totalCostPerMonth = $derived.by(() => {
-		const subs = Object.values(this.subscriptions.current);
+		const subs = Object.values(this.subscriptions);
 		let total = 0;
 
 		subs.forEach((sub) => {
@@ -149,7 +199,7 @@ export class SubscriptionStore {
 	});
 
 	totalCostPerYear = $derived.by(() => {
-		const subs = Object.values(this.subscriptions.current);
+		const subs = Object.values(this.subscriptions);
 		let total = 0;
 
 		subs.forEach((sub) => {
@@ -164,7 +214,7 @@ export class SubscriptionStore {
 	});
 
 	soonestSubscription = $derived.by(() => {
-		const subs = Object.values(this.subscriptions.current);
+		const subs = Object.values(this.subscriptions);
 
 		if (subs.length === 0) {
 			return null;
@@ -185,19 +235,39 @@ export class SubscriptionStore {
 
 	// ...existing code...
 	addSubscription(subscription: Subscription) {
-		this.subscriptions.current[subscription.service] = subscription;
+		this.subscriptionStorage.current.data[subscription.service] = subscription;
 	}
 
 	removeSubscription(serviceName: string) {
-		const copy = { ...this.subscriptions.current };
+		const copy = { ...this.subscriptionStorage.current.data };
 		delete copy[serviceName];
-		this.subscriptions.current = copy;
+		this.subscriptionStorage.current.data = copy;
 	}
 
-	importSubscriptions(subs: Record<string, Subscription>) {
-		this.subscriptions.current = {
-			...this.subscriptions.current,
-			...subs
+	importSubscriptions(subs: ImportSubscriptionData) {
+		const importedVersion = subs.version;
+		const targetVersion =
+			this.migrations.sort((a, b) => b.version - a.version)[0]?.version ?? currentMigrationVersion;
+
+		let incomingData: ImportSubscriptionData = subs;
+
+		if (importedVersion < targetVersion) {
+			console.log(
+				'Migrating imported subscription data from version',
+				importedVersion,
+				'to',
+				targetVersion
+			);
+
+			incomingData = migratePersistedData(incomingData, this.migrations);
+		}
+
+		this.subscriptionStorage.current = {
+			version: incomingData.version,
+			data: {
+				...this.subscriptionStorage.current.data,
+				...incomingData.data
+			}
 		};
 	}
 }

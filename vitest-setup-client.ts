@@ -1,3 +1,3 @@
 /// <reference types="@vitest/browser/matchers" />
 /// <reference types="@vitest/browser/providers/playwright" />
-import '@testing-library/svelte/vitest'
+import '@testing-library/svelte/vitest';

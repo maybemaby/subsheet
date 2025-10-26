@@ -6,7 +6,7 @@
 	import {
 		getSubscriptionContext,
 		importSubscriptionDataSchema,
-		type Subscription
+		type ImportSubscriptionData
 	} from '$lib/subscriptions.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import Label from '$lib/components/ui/label/label.svelte';
@@ -14,11 +14,11 @@
 	import { safeParse } from 'valibot';
 
 	const subStore = getSubscriptionContext();
-	let importedData = $state<Record<string, Subscription> | null>(null);
+	let importedData = $state<ImportSubscriptionData | null>(null);
 	let importError = $state<string | null>(null);
 
 	function exportData() {
-		const data = subStore.subscriptions.current;
+		const data = subStore.subscriptionStorage.current;
 		const json = JSON.stringify(data, null, 2);
 		const blob = new Blob([json], { type: 'application/json' });
 		const url = URL.createObjectURL(blob);
@@ -49,7 +49,6 @@
 						return;
 					}
 
-					// TODO: Validate data structure here
 					importedData = res.output;
 				} catch (error) {
 					importError = 'Failed to import subscriptions. Please check the file format.';
@@ -107,7 +106,7 @@
 		<div class="mt-8 rounded-md border p-4 shadow-md">
 			<h2 class="mb-4">Imported data</h2>
 
-			<SubscriptionSection subscriptions={importedData} />
+			<SubscriptionSection subscriptions={importedData.data} />
 		</div>
 	{/if}
 </div>

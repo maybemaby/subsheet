@@ -111,6 +111,63 @@
 			}
 		]
 	},
+	"Apple TV+": {
+		"plans": [
+			{
+				"name": "Monthly",
+				"price": 12.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"iCloud+": {
+		"plans": [
+			{
+				"name": "50GB",
+				"price": 0.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "200GB",
+				"price": 2.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "2TB",
+				"price": 9.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "6TB",
+				"price": 29.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "12TB",
+				"price": 59.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"Apple One": {
+		"plans": [
+			{
+				"name": "Individual",
+				"price": 19.95,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Family",
+				"price": 25.95,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Premier",
+				"price": 37.95,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
 	"Amazon Prime": {
 		"plans": [
 			{
@@ -168,6 +225,63 @@
 			{
 				"name": "Google AI Pro (2TB)",
 				"price": 19.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"Audible": {
+		"plans": [
+			{
+				"name": "Plus",
+				"price": 7.95,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Premium Plus",
+				"price": 14.95,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"Crunchyroll": {
+		"plans": [
+			{
+				"name": "Fan",
+				"price": 7.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Fan (Yearly)",
+				"price": 79.99,
+				"interval": { "months": 0, "years": 1, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Mega Fan",
+				"price": 11.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Mega Fan (Yearly)",
+				"price": 119.99,
+				"interval": { "months": 0, "years": 1, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Ultimate Fan",
+				"price": 15.99,
+				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
+			},
+			{
+				"name": "Ultimate Fan (Yearly)",
+				"price": 149.99,
+				"interval": { "months": 0, "years": 1, "days": 0, "weeks": 0 }
+			}
+		]
+	},
+	"Twitch": {
+		"plans": [
+			{
+				"name": "Turbo",
+				"price": 11.99,
 				"interval": { "months": 1, "years": 0, "days": 0, "weeks": 0 }
 			}
 		]
